@@ -1,0 +1,29 @@
+version_info: "0"
+resources:
+- '@type': type.googleapis.com/envoy.api.v2.Listener
+  name: service_listener
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 5501 }
+  filter_chains:
+    - filters:
+        - name: envoy.filters.network.http_connection_manager
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+            stat_prefix: grpc_json
+            codec_type: AUTO
+            rds:
+              route_config_name: local_route
+              config_source:
+                path: /etc/envoy/rds.yaml
+            http_filters:
+              - name: envoy.filters.http.grpc_json_transcoder
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder
+                  proto_descriptor: "/desc/helloworld.pb"
+                  services: ["helloworld.Greeter"]
+                  print_options:
+                    add_whitespace: true
+                    always_print_primitive_fields: true
+                    always_print_enums_as_ints: false
+                    preserve_proto_field_names: false
+              - name: envoy.filters.http.router

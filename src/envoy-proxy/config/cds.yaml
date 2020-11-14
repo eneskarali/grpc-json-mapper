@@ -1,0 +1,14 @@
+
+version_info: "0"
+resources:
+- '@type': type.googleapis.com/envoy.api.v2.Cluster
+  name: "GrpcService"
+  connect_timeout: 5s
+  lb_policy: ROUND_ROBIN
+  type: logical_dns
+  dns_lookup_family: V4_ONLY
+  http2_protocol_options: {}
+  eds_cluster_config:
+    service_name: "GrpcService"
+    eds_config:
+      path: /etc/envoy/eds.yaml
