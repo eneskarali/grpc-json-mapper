@@ -21,10 +21,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
-	pb "test/helloworld"
+	pb "server/pb"
 
 	"google.golang.org/grpc"
 )
@@ -35,7 +36,7 @@ const (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedGreeterServer
+	pb.UnimplementedHelloServiceServer
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -49,8 +50,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
+
+	pb.RegisterHelloServiceServer(s, &server{})
+
+	fmt.Printf("server started...")
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
